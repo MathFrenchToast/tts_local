@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+websockets
+whisper-live
+faster-whisper
