@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Local ASR Client (Chrome)",
+  "version": "1.1",
+  "description": "Transcription vocale locale. Alt+Shift+W pour activer.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "ws://127.0.0.1:8000/*"
+  ],
+  "icons": {
+    "16": "icons/icon.svg",
+    "32": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "toggle-recording": {
+      "suggested_key": {
+        "default": "Alt+Shift+W",
+        "mac": "Alt+Shift+W"
+      },
+      "description": "Démarrer/Arrêter la transcription"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Local ASR"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "all_frames": true
+    }
+  ]
+}

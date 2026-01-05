@@ -128,40 +128,45 @@ venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
 
 The server will print the device it's using on startup and then wait for client connections.
 
-### 2. Running the Client
-
-So far two clients exist:
-- python client
-- html/js client as a firefox extension
-
-avascript client
+### 2. Running the Python Client
 
 Open a **new terminal** in the same project directory.
 
 **To start the client and stream your microphone input:**
 ```bash
-#install the client requirements
-venv/bin/pip install -r client_requirements.txt
-#run the client 
+# Install the client requirements
+venv/bin/pip install -r requirements-client.txt
+# Run the client 
 venv/bin/python -m src.client
 ```
 
 The client will connect to the server. Start speaking, and you will see the transcribed text appear in your terminal. Press `Ctrl+C` to stop the client.
 
-### 3. Running the Web Test Page
+### 3. Browser Extensions (Firefox & Chrome)
 
-A simple HTML test page is provided to verify the transcription and the browser extension in a controlled environment.
+Browser extensions allow you to use the ASR server directly in any web form (Gmail, Google Docs, etc.).
 
-first, install locally the FF extension:
-go to: [ff settings](about:debugging#/runtime/this-firefox)  
-then add a unpacked extension by selecting the file: ./firefox_extension/manifest.json.
+#### Firefox Extension
+1.  Open Firefox and go to `about:debugging#/runtime/this-firefox`.
+2.  Click **"Load Temporary Add-on..."**.
+3.  Select the `manifest.json` file inside the `firefox_extension/` directory.
+4.  **Usage**: Press **Alt+Shift+W** on any page to start/stop transcription.
 
-After this, you should be able to activate transcription on any form, e.g Gmail new email.
+#### Chrome Extension
+1.  Open Chrome and go to `chrome://extensions/`.
+2.  Enable **"Developer mode"** (top right).
+3.  Click **"Load unpacked"**.
+4.  Select the `chrome_extension/` directory.
+5.  **Usage**: Press **Alt+Shift+W** on any page to start/stop transcription.
+
+### 4. Running the Web Test Page
+
+A simple HTML test page is provided to verify the transcription in a controlled environment.
 
 **To use the test page:**
-1.  Open the file `test_page.html` in your browser (e.g., `firefox test_page.html`).
+1.  Open `test_page.html` in your browser.
 2.  Click inside the text area.
-3.  Use the **Alt+Shift+W** shortcut (or the browser extension popup) to start dictating.
+3.  Use the **Alt+Shift+W** shortcut (after installing an extension) to start dictating.
 
 **Built-in Shortcuts for the Test Page:**
 *   **Alt + C**: Copy the current content of the textarea to your clipboard.
