@@ -1,0 +1,5 @@
+websockets
+pyaudio
+numpy
+pynput
+pyperclip
