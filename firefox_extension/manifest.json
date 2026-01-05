@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Local ASR Client",
   "version": "1.1",
-  "description": "Client de transcription vocale locale. Ctrl+Shift+U pour activer.",
+  "description": "Client de transcription vocale locale. Alt+Shift+W pour activer.",
   "permissions": [
     "activeTab",
     "scripting"
@@ -16,8 +16,8 @@
   "commands": {
     "toggle-recording": {
       "suggested_key": {
-        "default": "Alt+W",
-        "mac": "Alt+W"
+        "default": "Alt+Shift+W",
+        "mac": "Alt+Shift+W"
       },
       "description": "Démarrer/Arrêter la transcription"
     }
