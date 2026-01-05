@@ -21,8 +21,13 @@ def on_press(key):
                     current_sequence = transcription_history[sequence_start_index:]
                     text_to_copy = " ".join(current_sequence)
                 if text_to_copy:
-                    pyperclip.copy(text_to_copy)
-                    print(f"\n[Copied to clipboard]: {text_to_copy}")
+                    try:
+                        pyperclip.copy(text_to_copy)
+                        print(f"\n[Copied to clipboard]: {text_to_copy}")
+                    except pyperclip.PyperclipException:
+                        print("\n[Error] Clipboard copy failed. Please install 'xclip' or 'xsel' (sudo apt install xclip).")
+                    except Exception as e:
+                        print(f"\n[Error] Clipboard copy failed: {e}")
                 else:
                     print("\n[Clipboard] Nothing to copy.")
             
