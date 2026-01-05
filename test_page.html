@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zone de Test ASR</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 18px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .shortcuts {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        kbd {
+            background: #eee;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        kbd:hover {
+            background: #e0e0e0;
+            border-color: #bbb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        kbd:active {
+            background: #d0d0d0;
+            transform: translateY(1px);
+        }
+        #status-msg {
+            margin-top: 10px;
+            height: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Test de Transcription Locale</h1>
+    <p>Cliquez dans la zone ci-dessous, puis utilisez <strong>Alt+Shift+W</strong> pour dicter.</p>
+    
+    <textarea id="test-area" placeholder="Le texte transcrit apparaîtra ici..."></textarea>
+    
+    <div id="status-msg"></div>
+
+    <div class="shortcuts">
+        <span onclick="copyToClipboard()"><kbd>Alt + C</kbd> Copier</span>
+        <span onclick="clearText()"><kbd>Alt + R</kbd> ou <kbd>Alt + D</kbd> Tout effacer</span>
+    </div>
+</div>
+
+<script>
+    const textarea = document.getElementById('test-area');
+    const statusMsg = document.getElementById('status-msg');
+
+    function showStatus(msg) {
+        statusMsg.innerText = msg;
+        setTimeout(() => statusMsg.innerText = '', 2000);
+    }
+    
+    function clearText() {
+        textarea.value = '';
+        showStatus('Texte effacé');
+        textarea.focus();
+    }
+
+    async function copyToClipboard() {
+        try {
+            await navigator.clipboard.writeText(textarea.value);
+            showStatus('Contenu copié dans le presse-papier !');
+        } catch (err) {
+            showStatus('Erreur lors de la copie');
+        }
+        textarea.focus();
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        
+        // On intercepte les combinaisons avec Alt
+        if (e.altKey) {
+            if (key === 'c') {
+                e.preventDefault(); // Empêche d'autres actions du navigateur
+                copyToClipboard();
+            } else if (key === 'r' || key === 'd') {
+                e.preventDefault();
+                clearText();
+            }
+        }
+    });
+
+    async function copyToClipboard() {
+        try {
+            await navigator.clipboard.writeText(textarea.value);
+            showStatus('Contenu copié dans le presse-papier !');
+        } catch (err) {
+            showStatus('Erreur lors de la copie');
+        }
+    }
+
+    // Détection d'insertion de texte par l'extension
+    textarea.addEventListener('input', () => {
+        // On pourrait ajouter un effet visuel ici
+    });
+</script>
+
+</body>
+</html>

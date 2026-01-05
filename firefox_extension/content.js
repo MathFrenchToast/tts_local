@@ -156,14 +156,30 @@ function insertTextAtCursor(text) {
     const el = document.activeElement;
     if (!el) return;
 
+    // Méthode 1 : execCommand (La plus robuste pour les éditeurs riches comme Google Docs, Gmail, etc.)
+    // Elle simule une vraie saisie utilisateur, ce qui déclenche les événements internes de l'éditeur.
+    try {
+        if (document.queryCommandSupported('insertText')) {
+            const success = document.execCommand('insertText', false, text);
+            if (success) return; // Si ça a marché, on s'arrête là.
+        }
+    } catch (e) {
+        console.warn("ASR: execCommand failed", e);
+    }
+
+    // Méthode 2 : Fallback pour les champs standards (Input / Textarea)
     if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
         const start = el.selectionStart;
         const end = el.selectionEnd;
         const value = el.value;
+        
         el.value = value.substring(0, start) + text + value.substring(end);
         el.selectionStart = el.selectionEnd = start + text.length;
         el.dispatchEvent(new Event('input', { bubbles: true }));
-    } else if (el.isContentEditable) {
+    } 
+    // Méthode 3 : Fallback manuel pour les éditeurs riches (ContentEditable)
+    // Si execCommand a échoué mais qu'on est dans une zone éditable
+    else if (el.isContentEditable) {
         const selection = window.getSelection();
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
@@ -174,8 +190,11 @@ function insertTextAtCursor(text) {
             range.setEndAfter(textNode);
             selection.removeAllRanges();
             selection.addRange(range);
+            
+            // Tenter de déclencher un événement d'input pour réveiller l'éditeur
+            el.dispatchEvent(new Event('input', { bubbles: true }));
         }
-    }
+    } 
 }
 
 // ... (Fonctions de conversion audio identiques à popup.js)
