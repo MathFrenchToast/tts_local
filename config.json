@@ -1,5 +1,8 @@
 {
   "model_size": "medium",
   "language": "fr",
-  "vad_filter": true
+  "vad_filter": true,
+  "device": "auto",
+  "compute_type_gpu": "float16",
+  "compute_type_cpu": "int8"
 }

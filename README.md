@@ -52,19 +52,42 @@ You need to run the server first, and then run the client in a separate terminal
 
 ### 1. Running the Server
 
-The server can be configured via a `config.json` file and overridden by environment variables.
+The server can be configured via a `config.json` file and overridden by environment variables. It will auto-detect a CUDA-enabled GPU if `DEVICE` is set to `"auto"`.
 
-**To run the server with default settings (`small` model, `en` language, VAD enabled):**
+**Recommended: Use the startup script**
+This script automatically sets up the environment variables (fixing common library path issues with CUDA) and runs the server.
 ```bash
+./start_server.sh
+```
+
+**To specify settings, use environment variables:**
+You can pass environment variables to the script:
+
+*   `DEVICE`: Set the device to run on (`auto`, `cuda`, `cpu`).
+*   `MODEL_SIZE`: The Whisper model size (`tiny`, `base`, `small`, `medium`, `large-v3`).
+*   `LANGUAGE`: The transcription language (`en`, `fr`, `es`, etc.).
+*   `VAD_FILTER`: Enable/disable the internal VAD filter (`true` or `false`).
+*   `COMPUTE_TYPE_GPU`: The compute type for GPU (`float16`, `int8_float16`).
+*   `COMPUTE_TYPE_CPU`: The compute type for CPU (`int8`, `float32`).
+
+**Example (running on CPU with the French `medium` model):**
+```bash
+DEVICE="cpu" MODEL_SIZE="medium" LANGUAGE="fr" ./start_server.sh
+```
+
+**Example (running on CUDA with `float16` precision):**
+```bash
+DEVICE="cuda" COMPUTE_TYPE_GPU="float16" ./start_server.sh
+```
+
+**Alternative: Running manually with `uvicorn`**
+If you prefer to run `uvicorn` directly, ensure your `LD_LIBRARY_PATH` includes the NVIDIA libraries from your virtual environment:
+```bash
+export LD_LIBRARY_PATH=$(find venv/lib/python*/site-packages/nvidia -name lib -type d | paste -sd ":" -):$LD_LIBRARY_PATH
 venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 
-**To specify the language, model size, and VAD setting, use environment variables:**
-This example starts the server with the `medium` model for French and disables the VAD filter.
-```bash
-MODEL_SIZE="medium" LANGUAGE="fr" VAD_FILTER="false" venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000
-```
-The server will load the model and wait for client connections.
+The server will print the device it's using on startup and then wait for client connections.
 
 ### 2. Running the Client
 

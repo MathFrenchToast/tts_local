@@ -1,5 +1,10 @@
 fastapi
 uvicorn[standard]
 websockets
-whisper-live
 faster-whisper
+pyaudio
+soundfile
+numpy
+torch
+nvidia-cublas-cu12
+nvidia-cudnn-cu12

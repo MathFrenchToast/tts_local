@@ -29,7 +29,7 @@ async def send_audio_and_receive_transcriptions(uri):
             async def receive_transcriptions():
                 while True:
                     transcription = await websocket.recv()
-                    print(f"\rTranscription: {transcription.strip()}", end="") # \r to overwrite line
+                    print(f"Transcription: {transcription.strip()}") # \r to overwrite line
 
             # Run both tasks concurrently
             await asyncio.gather(send_audio(), receive_transcriptions())
