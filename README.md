@@ -46,6 +46,45 @@ The server continuously listens for audio chunks from the client. It accumulates
     pip install -r requirements.txt
     ```
 
+## Docker
+
+You can also run the server using Docker. This is useful for deployment or if you want to avoid installing system dependencies manually.
+
+### 1. Build the Image
+```bash
+docker build -t tts-local-server .
+```
+
+### 2. Run the Container
+
+**With GPU support (Recommended):**
+You need the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed on your host.
+```bash
+docker run --gpus all -p 8000:8000 --env DEVICE=cuda tts-local-server
+```
+
+Note: Nvidia Container Toolkit is required: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+then enable gpu on docker:
+```bash
+sudo nvidia-ctk runtime configure --runtime=docker
+
+```
+
+**CPU Only:**
+```bash
+docker run -p 8000:8000 --env DEVICE=cpu tts-local-server
+```
+
+**Custom Configuration:**
+You can pass any environment variable supported by the server:
+```bash
+docker run --gpus all -p 8000:8000 \
+  -e DEVICE=cuda \
+  -e MODEL_SIZE=medium \
+  -e LANGUAGE=fr \
+  tts-local-server
+```
+
 ## Usage
 
 You need to run the server first, and then run the client in a separate terminal.

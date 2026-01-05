@@ -4,7 +4,7 @@ This document tracks the remaining tasks and potential future improvements for t
 
 ## High Priority
 
-- [ ] **Containerize the Application:** Create a `Dockerfile` to package the server for easy deployment and dependency management. This was an original goal that has not been completed.
+- [x] **Containerize the Application:** Create a `Dockerfile` to package the server for easy deployment and dependency management. This was an original goal that has not been completed.
 
 ## Client and UI Development
 

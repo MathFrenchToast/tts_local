@@ -156,18 +156,34 @@ function insertTextAtCursor(text) {
     const el = document.activeElement;
     if (!el) return;
 
-    // Méthode 1 : execCommand (La plus robuste pour les éditeurs riches comme Google Docs, Gmail, etc.)
-    // Elle simule une vraie saisie utilisateur, ce qui déclenche les événements internes de l'éditeur.
+    // Méthode 1 : execCommand
     try {
         if (document.queryCommandSupported('insertText')) {
             const success = document.execCommand('insertText', false, text);
-            if (success) return; // Si ça a marché, on s'arrête là.
+            if (success) return; 
         }
     } catch (e) {
         console.warn("ASR: execCommand failed", e);
     }
 
-    // Méthode 2 : Fallback pour les champs standards (Input / Textarea)
+    // Méthode 2 : InputEvent moderne (Spécial Google Docs / Frameworks récents)
+    // Si execCommand a échoué, on tente de simuler un événement de saisie directe
+    try {
+        const inputEvent = new InputEvent('input', {
+            bubbles: true,
+            cancelable: true,
+            inputType: 'insertText',
+            data: text,
+            view: window
+        });
+        el.dispatchEvent(inputEvent);
+        // Si Google Docs a intercepté ça, le texte devrait apparaître.
+        // On continue quand même vers les fallbacks si l'élément est un input standard vide
+    } catch (e) {
+        console.warn("ASR: InputEvent failed", e);
+    }
+
+    // Méthode 3 : Fallback pour les champs standards (Input / Textarea)
     if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
         const start = el.selectionStart;
         const end = el.selectionEnd;
