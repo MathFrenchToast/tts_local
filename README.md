@@ -1,6 +1,7 @@
 # Real-Time Local Speech-to-Text Server
 
 This project provides a real-time, local speech-to-text (ASR) service using a client-server architecture. It captures audio from a microphone, streams it to a server, and returns transcriptions in near real-time.
+Many clients available, among them, one for keyboard emulation that work everywhere: Browser, terminal, applications.
 
 ## 🚀 Quick Start
 
