@@ -34,24 +34,54 @@ class TrayClient:
         # Queue for thread-safe communication
         self.status_queue = queue.Queue()
 
+        # Pre-generate icons to avoid redrawing issues
+        # Note: We must call create_image, but create_image is a method.
+        # It's better to make it static or call it on self if possible.
+        # Since it doesn't depend on self state (only constants), it works.
+        self.icons = {
+            "active": self.create_image(COLOR_ACTIVE),
+            "inactive": self.create_image(COLOR_INACTIVE),
+            "error": self.create_image(COLOR_ERROR),
+        }
+
     def create_image(self, color):
-        """Generate a simple circle icon with the given color."""
+        """Generate a professional looking microphone icon with state color."""
         image = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
-        draw.ellipse((8, 8, ICON_SIZE - 8, ICON_SIZE - 8), fill=color)
+
+        # 1. Draw the background circle (Status color)
+        # Add a slight dark border for better visibility on all taskbars
+        border_color = (0, 0, 0, 50)
+        draw.ellipse(
+            (2, 2, ICON_SIZE - 2, ICON_SIZE - 2), fill=color, outline=border_color, width=2
+        )
+
+        # 2. Draw a stylized white microphone
+        mic_color = (255, 255, 255, 230)
+
+        # Mic body (central capsule)
+        draw.rounded_rectangle((24, 14, 40, 38), radius=8, fill=mic_color)
+
+        # Mic stand (the "U" shape)
+        draw.arc((18, 26, 46, 44), start=0, end=180, fill=mic_color, width=3)
+
+        # Mic base (vertical stick and horizontal bar)
+        draw.line((32, 44, 32, 52), fill=mic_color, width=3)
+        draw.line((24, 52, 40, 52), fill=mic_color, width=3)
+
         return image
 
     def update_icon_state(self, state):
         """Update the icon based on state ('active', 'inactive', 'error')."""
-        if state == "active":
-            self.icon.icon = self.create_image(COLOR_ACTIVE)
-            self.icon.title = "TTS Client: Listening"
-        elif state == "inactive":
-            self.icon.icon = self.create_image(COLOR_INACTIVE)
-            self.icon.title = "TTS Client: Paused (F8)"
-        elif state == "error":
-            self.icon.icon = self.create_image(COLOR_ERROR)
-            self.icon.title = "TTS Client: Connection Error"
+        if state in self.icons:
+            self.icon.icon = self.icons[state]
+
+            if state == "active":
+                self.icon.title = "TTS Client: Listening"
+            elif state == "inactive":
+                self.icon.title = "TTS Client: Paused (F8)"
+            elif state == "error":
+                self.icon.title = "TTS Client: Connection Error"
 
     def on_toggle_click(self, icon, item):
         self.toggle_typing()
@@ -186,7 +216,7 @@ class TrayClient:
 
         self.icon = pystray.Icon(
             "TTS Client",
-            self.create_image(COLOR_INACTIVE),
+            self.icons["inactive"],  # Use pre-generated icon
             "TTS Client: Paused",
             menu=pystray.Menu(
                 pystray.MenuItem("Toggle (F8)", self.on_toggle_click),
