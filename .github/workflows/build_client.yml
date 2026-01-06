@@ -1,0 +1,65 @@
+name: Build Client Executables
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: tts-client-linux
+            executable_name: tts_client
+          - os: windows-latest
+            artifact_name: tts-client-windows.exe
+            executable_name: tts_client.exe
+          # - os: macos-latest
+          #   artifact_name: tts-client-macos
+          #   executable_name: tts_client
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    # --- System Dependencies ---
+    - name: Install Linux Dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y portaudio19-dev xclip xdotool
+
+    # --- Python Dependencies ---
+    - name: Install Python packages
+      run: |
+        pip install -r requirements-client.txt
+        pip install pyinstaller
+
+    # --- Build with PyInstaller ---
+    - name: Build Executable
+      run: |
+        pyinstaller --onefile --noconsole --name ${{ matrix.executable_name }} src/tray_client.py
+
+    # --- Upload Release Assets ---
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: dist/${{ matrix.executable_name }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # --- Upload Artifact (for manual runs) ---
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: dist/${{ matrix.executable_name }}

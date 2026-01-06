@@ -5,7 +5,7 @@ Many clients available, among them, one for keyboard emulation that work everywh
 
 ## 🚀 Quick Start
 
-Get up and running in minutes using Docker for the server and Python for the local client.
+Get up and running in minutes. You can either download pre-built binaries or run from source.
 
 ### 1. Start the Server (Docker)
 This runs the heavy ASR engine in a container (CPU mode by default).
@@ -17,12 +17,19 @@ docker build -t tts-local-server .
 docker run -d -p 8000:8000 --env DEVICE=cpu tts-local-server
 ```
 
-### 2. Start the Client (Local)
-This runs the lightweight system tray app on your host machine.
+### 2. Start the Client
+Choose the method that fits your needs:
+
+#### A. Download Pre-built Binary (Recommended for Users)
+Go to the **[GitHub Releases](https://github.com/your-username/your-repo/releases)** page and download the executable for your OS:
+- **Windows**: `tts_client.exe` (Standalone, no installation needed)
+- **Linux**: `tts_client` (Standalone binary)
+
+#### B. Run from Source (For Developers)
 ```bash
 # Setup python environment
 python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate
 
 # Install client dependencies
 pip install -r requirements-client.txt
@@ -30,7 +37,18 @@ pip install -r requirements-client.txt
 # Launch the Tray App
 python -m src.tray_client
 ```
-*You will see a Red Icon in your system tray. Press **F8** to toggle recording (Green).*
+*You will see a Microphone Icon in your system tray. Press **F8** to toggle recording.*
+
+---
+
+## 🛠 CI/CD & Distribution
+
+This project uses **GitHub Actions** to automatically build and package the client for multiple platforms. Whenever a new Release is created, the pipeline:
+1.  Tests the code.
+2.  Packages the Python client using **PyInstaller**.
+3.  Uploads standalone executables to the Release page.
+
+This ensures that users can enjoy the tool without having to install Python or manage virtual environments.
 
 ---
 
