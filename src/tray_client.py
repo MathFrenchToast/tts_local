@@ -147,20 +147,25 @@ class TrayClient:
                                                 # Linux Specific Hack: xdotool
                                                 if platform.system() == "Linux":
                                                     try:
+                                                        # Use Shift+Insert which is universal on Linux (Terminal + GUI)
                                                         subprocess.run(
-                                                            ["xdotool", "key", "ctrl+v"],
+                                                            ["xdotool", "key", "shift+Insert"],
                                                             check=False,
                                                         )
                                                     except FileNotFoundError:
                                                         print(
                                                             "Error: 'xdotool' not found. Please install: sudo apt install xdotool"
                                                         )
-                                                        # Fallback to pynput
+                                                        # Fallback to pynput with Shift+Insert
                                                         with self.kb_controller.pressed(
-                                                            keyboard.Key.ctrl
+                                                            keyboard.Key.shift
                                                         ):
-                                                            self.kb_controller.press("v")
-                                                            self.kb_controller.release("v")
+                                                            self.kb_controller.press(
+                                                                keyboard.Key.insert
+                                                            )
+                                                            self.kb_controller.release(
+                                                                keyboard.Key.insert
+                                                            )
                                                 else:
                                                     # Windows/Mac standard pynput
                                                     with self.kb_controller.pressed(

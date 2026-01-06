@@ -1,9 +1,12 @@
 import argparse
 import asyncio
+import platform
 import queue
+import subprocess
 import threading
 import tkinter as tk
 
+import pyperclip
 import websockets
 from pynput import keyboard
 
@@ -60,9 +63,7 @@ class GraphicalUI(BaseUI):
 
         # Content: Icon, Text, Close button
         # Icon / Logo area (using a nice Unicode symbol as placeholder for the SVG)
-        self.lbl_icon = tk.Label(
-            self.frame, text="🎙️", bg=self.col_disabled, font=("Arial", 12)
-        )
+        self.lbl_icon = tk.Label(self.frame, text="🎙️", bg=self.col_disabled, font=("Arial", 12))
         self.lbl_icon.pack(side="left", padx=(8, 0))
 
         # Text Label
@@ -122,11 +123,7 @@ class GraphicalUI(BaseUI):
 
         # Only update text if it was the default "Paused" message
         current_text = self.lbl_text_var.get()
-        if (
-            "Paused" in current_text
-            or "[F8]" in current_text
-            or "Listening" in current_text
-        ):
+        if "Paused" in current_text or "[F8]" in current_text or "Listening" in current_text:
             self.lbl_text_var.set(status_text)
 
     def update_status(self, is_enabled: bool):
@@ -221,12 +218,33 @@ async def async_main_loop(uri, ui: BaseUI, stop_event: threading.Event):
                                     ui.update_text(text)
                                     if is_typing_enabled:
                                         ui.log(f"[Typing]: {text}...")
-                                        # Type characters one by one with a small delay to be reliable
-                                        for char in text + " ":
-                                            kb_controller.type(char)
-                                            await asyncio.sleep(
-                                                0.001
-                                            )  # 1ms between characters
+
+                                        # --- Wayland & Terminal Bypass: Clipboard Injection ---
+                                        try:
+                                            pyperclip.copy(text + " ")
+                                            await asyncio.sleep(0.05)  # Wait for clipboard
+
+                                            if platform.system() == "Linux":
+                                                try:
+                                                    # Shift+Insert is universal on Linux (Terminal + GUI)
+                                                    subprocess.run(
+                                                        ["xdotool", "key", "shift+Insert"],
+                                                        check=False,
+                                                    )
+                                                except FileNotFoundError:
+                                                    # Fallback to pynput
+                                                    with kb_controller.pressed(keyboard.Key.shift):
+                                                        kb_controller.press(keyboard.Key.insert)
+                                                        kb_controller.release(keyboard.Key.insert)
+                                            else:
+                                                # Windows/Mac: Ctrl+V
+                                                with kb_controller.pressed(keyboard.Key.ctrl):
+                                                    kb_controller.press("v")
+                                                    kb_controller.release("v")
+
+                                            await asyncio.sleep(0.1)  # Debounce
+                                        except Exception as e:
+                                            ui.log(f"Clipboard Error: {e}")
                                     else:
                                         ui.log("[Skipped]: Typing disabled")
                             except asyncio.TimeoutError:
@@ -270,9 +288,7 @@ def run_async_in_thread(uri, ui, stop_event):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="TTS Keyboard Client")
-    parser.add_argument(
-        "--gui", action="store_true", help="Launch with a status window"
-    )
+    parser.add_argument("--gui", action="store_true", help="Launch with a status window")
     parser.add_argument("--host", default="127.0.0.1", help="Server host")
     parser.add_argument("--port", default="8000", help="Server port")
     args = parser.parse_args()
