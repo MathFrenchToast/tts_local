@@ -37,7 +37,13 @@ pip install -r requirements-client.txt
 # Launch the Tray App
 python -m src.tray_client
 ```
-*You will see a Microphone Icon in your system tray. Press **F8** to toggle recording.*
+
+### 3. How to Use
+1.  **Focus** any text field where you want to type (Notepad, Browser, IDE).
+2.  Press **F8** on your keyboard.
+3.  The icon will turn **Green** 🟢. Start speaking.
+4.  Your speech will be transcribed and typed automatically.
+5.  Press **F8** again to stop (Icon turns **Red** 🔴).
 
 ---
 
