@@ -45,6 +45,15 @@ The application is built on a client-server model, allowing for flexible integra
 
 The server continuously listens for audio chunks from the client. It accumulates a few seconds of audio before sending it to the ASR service for transcription. This segment-based approach provides a good balance between latency and transcription accuracy.
 
+## 🔌 Extensibility & Plugins
+
+The server features a modular processing pipeline. You can easily extend it by adding custom Python scripts to the `plugins/` directory. This allows for features like:
+- **Translation**: Translate transcriptions in real-time.
+- **Custom Logging**: Save transcriptions to specific files or databases.
+- **Jargon Replacement**: Automatically fix industry-specific terms.
+
+For detailed instructions on how to create and install plugins, see [doc/plugins.md](doc/plugins.md).
+
 ## Architecture Decision Record (ADR)
 
 1.  **ASR Engine - `faster-whisper`**: We chose `faster-whisper` as the core ASR engine. It is an optimized implementation of OpenAI's Whisper model, offering significant speed improvements and reduced memory usage, which are critical for achieving real-time performance on local hardware.
