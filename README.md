@@ -22,8 +22,8 @@ Choose the method that fits your needs:
 
 #### A. Download Pre-built Binary (Recommended for Users)
 Go to the **[GitHub Releases](https://github.com/your-username/your-repo/releases)** page and download the executable for your OS:
-- **Windows**: `tts_client.exe` (Standalone, no installation needed)
-- **Linux**: `tts_client` (Standalone binary)
+- **Windows**: `local_whisper.exe` (Standalone, no installation needed)
+- **Linux**: `local_whisper` (Standalone binary)
 
 #### B. Run from Source (For Developers)
 ```bash

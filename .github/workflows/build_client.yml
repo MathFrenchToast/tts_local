@@ -13,17 +13,17 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: tts-client-linux
-            executable_name: tts_client
-            # Explicitly tell PyInstaller to include Linux-specific pynput backends
-            pyinstaller_args: --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg
+            artifact_name: local-whisper-linux
+            executable_name: local_whisper
+            # Explicitly tell PyInstaller to include Linux-specific pynput backends and other dynamic imports
+            pyinstaller_args: --hidden-import pynput.keyboard._xorg --hidden-import pynput.mouse._xorg --hidden-import pyaudio --hidden-import websockets
           - os: windows-latest
-            artifact_name: tts-client-windows.exe
-            executable_name: tts_client.exe
-            # Explicitly tell PyInstaller to include Windows-specific pynput backends
-            pyinstaller_args: --hidden-import pynput.keyboard._win32 --hidden-import pynput.mouse._win32
+            artifact_name: local-whisper-windows.exe
+            executable_name: local_whisper.exe
+            # Explicitly tell PyInstaller to include Windows-specific pynput backends and other dynamic imports
+            pyinstaller_args: --hidden-import pynput.keyboard._win32 --hidden-import pynput.mouse._win32 --hidden-import pyaudio --hidden-import websockets
           # - os: macos-latest
-          #   artifact_name: tts-client-macos
+          #   artifact_name: local_wishper-client-macos
           #   executable_name: tts_client
           #   pyinstaller_args: --hidden-import pynput.keyboard._darwin --hidden-import pynput.mouse._darwin
 

@@ -11,3 +11,8 @@ venv/
 # Audio files
 test_audio.wav
 recorded_audio.wav
+
+# PyInstaller
+build/
+dist/
+*.spec
