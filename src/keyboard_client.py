@@ -287,7 +287,7 @@ def run_async_in_thread(uri, ui, stop_event):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="TTS Keyboard Client")
+    parser = argparse.ArgumentParser(description="Local Whisper Keyboard Client")
     parser.add_argument("--gui", action="store_true", help="Launch with a status window")
     parser.add_argument("--host", default="127.0.0.1", help="Server host")
     parser.add_argument("--port", default="8000", help="Server port")

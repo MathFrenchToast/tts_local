@@ -1,6 +1,6 @@
 # Plugin System Documentation
 
-The TTS Local Server features a flexible plugin system that allows developers to extend the text processing pipeline without modifying the core server code.
+The Local Whisper Server features a flexible plugin system that allows developers to extend the text processing pipeline without modifying the core server code.
 
 ## Architecture
 

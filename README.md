@@ -1,6 +1,6 @@
 # Real-Time Local Speech-to-Text Server
 
-This project provides a real-time, local speech-to-text (ASR) service using a client-server architecture. It captures audio from a microphone, streams it to a server, and returns transcriptions in near real-time.
+This project provides a real-time, local speech-to-text (Local Whisper) service using a client-server architecture. It captures audio from a microphone, streams it to a server, and returns transcriptions in near real-time.
 Many clients available, among them, one for keyboard emulation that work everywhere: Browser, terminal, applications.
 
 ## 🚀 Quick Start
@@ -11,10 +11,10 @@ Get up and running in minutes. You can either download pre-built binaries or run
 This runs the heavy ASR engine in a container (CPU mode by default).
 ```bash
 # Build the image
-docker build -t tts-local-server .
+docker build -t local-whisper-server .
 
 # Run container in background (Change 'cpu' to 'cuda' and add '--gpus all' for NVIDIA GPU)
-docker run -d -p 8000:8000 --env DEVICE=cpu tts-local-server
+docker run -d -p 8000:8000 --env DEVICE=cpu local-whisper-server
 ```
 
 ### 2. Start the Client
@@ -117,7 +117,7 @@ You can also run the server using Docker. This is useful for deployment or if yo
 
 ### 1. Build the Image
 ```bash
-docker build -t tts-local-server .
+docker build -t local-whisper-server .
 ```
 
 ### 2. Run the Container
@@ -125,7 +125,7 @@ docker build -t tts-local-server .
 **With GPU support (Recommended):**
 You need the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed on your host.
 ```bash
-docker run --gpus all -p 8000:8000 --env DEVICE=cuda tts-local-server
+docker run --gpus all -p 8000:8000 --env DEVICE=cuda local-whisper-server
 ```
 
 Note: Nvidia Container Toolkit is required: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
@@ -137,7 +137,7 @@ sudo nvidia-ctk runtime configure --runtime=docker
 
 **CPU Only:**
 ```bash
-docker run -p 8000:8000 --env DEVICE=cpu tts-local-server
+docker run -p 8000:8000 --env DEVICE=cpu local-whisper-server
 ```
 
 **Custom Configuration:**
@@ -147,7 +147,7 @@ docker run --gpus all -p 8000:8000 \
   -e DEVICE=cuda \
   -e MODEL_SIZE=medium \
   -e LANGUAGE=fr \
-  tts-local-server
+  local-whisper-server
 ```
 
 ## Usage

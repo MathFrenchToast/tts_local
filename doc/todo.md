@@ -1,4 +1,4 @@
-# Project To-Do List
+# Local Whisper Project To-Do List
 
 This document tracks the remaining tasks and potential future improvements for the local ASR server project.
 

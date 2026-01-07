@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Local ASR Client (Chrome)",
+  "name": "Local Whisper Client",
   "version": "1.1",
-  "description": "Transcription vocale locale. Alt+Shift+W pour activer.",
+  "description": "Transcription vocale locale via Local Whisper. Alt+Shift+W pour activer.",
   "permissions": [
     "activeTab",
     "scripting"
@@ -30,7 +30,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Local ASR"
+    "default_title": "Local Whisper"
   },
   "content_scripts": [
     {

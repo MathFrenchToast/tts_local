@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
+
 class ProcessingStep(ABC):
     """
     Interface for any step in the text processing pipeline.
     """
-    
+
     @property
     @abstractmethod
     def name(self) -> str:

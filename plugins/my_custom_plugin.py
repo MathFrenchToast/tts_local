@@ -1,5 +1,7 @@
+from typing import Any, Dict
+
 from src.interfaces import ProcessingStep
-from typing import Dict, Any
+
 
 class WordReplacerPlugin(ProcessingStep):
     """
@@ -16,14 +18,14 @@ class WordReplacerPlugin(ProcessingStep):
             "asap": "as soon as possible",
             "tba": "to be announced"
         }
-        
+
         processed_text = text
         for old, new in replacements.items():
             # Case insensitive replace
             import re
             processed_text = re.sub(re.escape(old), new, processed_text, flags=re.IGNORECASE)
-            
+
         if processed_text != text:
-            print(f" [Plugin]: Replaced jargon in text.")
-            
+            print(" [Plugin]: Replaced jargon in text.")
+
         return processed_text

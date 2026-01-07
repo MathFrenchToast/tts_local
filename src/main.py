@@ -1,5 +1,6 @@
 import os
 
+
 def fix_library_paths():
     """
     Manually add the nvidia library paths to LD_LIBRARY_PATH so ctranslate2 can find them.
@@ -28,6 +29,7 @@ def fix_library_paths():
 fix_library_paths()
 
 import json
+
 import torch
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
@@ -35,6 +37,7 @@ from src.asr_service import ASRService
 from src.audio_processor import AudioProcessor
 from src.pipeline import Pipeline
 from src.steps.llm_step import LLMCorrectionStep
+
 
 # --- Configuration Loading ---
 def get_config():

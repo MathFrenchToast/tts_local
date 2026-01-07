@@ -1,6 +1,8 @@
+from typing import Any, Dict
+
 from src.interfaces import ProcessingStep
 from src.llm_service import LLMService
-from typing import Dict, Any
+
 
 class LLMCorrectionStep(ProcessingStep):
     """
@@ -28,11 +30,11 @@ class LLMCorrectionStep(ProcessingStep):
     async def process(self, text: str, context: Dict[str, Any] = None) -> str:
         if not self._llm_service.enabled:
             return text
-        
+
         # We can also put the "Raw" text into context for other plugins
         if context is not None:
             context["raw_asr"] = text
-            
+
         print(f" [Raw ASR]: {text}")
         result = await self._llm_service.process_text(text)
         print(f" [LLM Fix]: {result}")
