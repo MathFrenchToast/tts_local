@@ -234,7 +234,11 @@ This is the most advanced client, designed to look and feel like a native applic
 *   **System Tray Icon:** Shows status via color (🔴 Paused, 🟢 Active, 🟡 Error).
 *   **Background Operation:** Runs silently in the background.
 *   **Global Hotkey:** Press **F8** anywhere to toggle transcription.
-*   **Menu:** Right-click the icon to Exit.
+*   **Two Insertion Modes:** (Toggle via right-click menu)
+    *   **Type Mode (Default):** Simulates keyboard typing. Best for Terminals and general use.
+    *   **Paste Mode:** Uses the clipboard to inject text instantly. Useful for specific GUI apps where typing is slow or blocked.
+*   **Menu:** Right-click the icon to Exit, or change the insertion mode.
+*   **Emergency Exit:** Press **Shift + F8** to quit the application instantly.
 
 **To start the tray client:**
 ```bash

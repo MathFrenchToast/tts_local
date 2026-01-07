@@ -28,6 +28,7 @@ class TrayClient:
         self.websocket_uri = websocket_uri
         self.stop_event = threading.Event()
         self.is_typing_enabled = False
+        self.paste_mode = False  # False = Type mode, True = Paste (Clipboard) mode
         self.icon = None
         self.kb_controller = keyboard.Controller()
         self.currently_pressed = set()
@@ -77,6 +78,14 @@ class TrayClient:
     def on_toggle_click(self, icon, item):
         self.toggle_typing()
 
+    def on_mode_click(self, icon, item):
+        """Toggle between Type and Paste modes."""
+        self.paste_mode = not self.paste_mode
+        print(f"Mode changed: {'Paste' if self.paste_mode else 'Type'}")
+        # Pystray menu is immutable, but we can re-assign the whole menu if needed.
+        # For simplicity, we just print and rely on the user seeing the toggle state if we had one.
+        # On some platforms, item.checked works if we used a checkbox.
+
     def on_exit_click(self, icon, item):
         print("Exiting...")
         self.stop_event.set()
@@ -92,7 +101,6 @@ class TrayClient:
     def on_press(self, key):
         """Keyboard press handler with Shift+F8 exit support."""
         if key == keyboard.Key.f8:
-            # Check if shift is held
             is_shift = any(
                 k in self.currently_pressed
                 for k in [keyboard.Key.shift, keyboard.Key.shift_l, keyboard.Key.shift_r]
@@ -142,34 +150,48 @@ class TrayClient:
                                     if text:
                                         print(f"Server: {text}")
                                         if self.is_typing_enabled:
-                                            try:
-                                                pyperclip.copy(text + " ")
-                                                await asyncio.sleep(0.05)
-                                                if platform.system() == "Linux":
-                                                    try:
+                                            full_text = text + " "
+
+                                            if self.paste_mode:
+                                                # --- Paste Mode (Clipboard Injection) ---
+                                                try:
+                                                    pyperclip.copy(full_text)
+                                                    await asyncio.sleep(0.05)
+                                                    if platform.system() == "Linux":
+                                                        # Try Shift+Insert first as it's more universal
                                                         subprocess.run(
                                                             ["xdotool", "key", "shift+Insert"],
                                                             check=False,
                                                         )
-                                                    except FileNotFoundError:
+                                                    else:
                                                         with self.kb_controller.pressed(
-                                                            keyboard.Key.shift
+                                                            keyboard.Key.ctrl
                                                         ):
-                                                            self.kb_controller.press(
-                                                                keyboard.Key.insert
-                                                            )
-                                                            self.kb_controller.release(
-                                                                keyboard.Key.insert
-                                                            )
+                                                            self.kb_controller.press("v")
+                                                            self.kb_controller.release("v")
+                                                except Exception as e:
+                                                    print(f"Paste Error: {e}")
+                                            else:
+                                                # --- Type Mode (Simulated Typing) ---
+                                                if platform.system() == "Linux":
+                                                    try:
+                                                        # Use xdotool type for robustness
+                                                        subprocess.run(
+                                                            [
+                                                                "xdotool",
+                                                                "type",
+                                                                "--delay",
+                                                                "2",
+                                                                full_text,
+                                                            ],
+                                                            check=False,
+                                                        )
+                                                    except FileNotFoundError:
+                                                        # Fallback to pynput
+                                                        self.kb_controller.type(full_text)
                                                 else:
-                                                    with self.kb_controller.pressed(
-                                                        keyboard.Key.ctrl
-                                                    ):
-                                                        self.kb_controller.press("v")
-                                                        self.kb_controller.release("v")
-                                                await asyncio.sleep(0.1)
-                                            except Exception as e:
-                                                print(f"Clipboard Error: {e}")
+                                                    self.kb_controller.type(full_text)
+
                                 except asyncio.TimeoutError:
                                     continue
 
@@ -202,12 +224,15 @@ class TrayClient:
         loop.close()
 
     def run(self):
-        # Start keyboard listener
         kb_listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
         kb_listener.start()
 
         t = threading.Thread(target=self.run_async_thread, daemon=True)
         t.start()
+
+        # Define the menu with a toggle-able mode item
+        def get_mode_text(item):
+            return "Switch to Type Mode" if self.paste_mode else "Switch to Paste Mode"
 
         self.icon = pystray.Icon(
             "TTS Client",
@@ -215,6 +240,7 @@ class TrayClient:
             "TTS Client: Paused",
             menu=pystray.Menu(
                 pystray.MenuItem("Toggle (F8)", self.on_toggle_click),
+                pystray.MenuItem(get_mode_text, self.on_mode_click),
                 pystray.MenuItem("Exit (Shift+F8)", self.on_exit_click),
             ),
         )
