@@ -23,6 +23,7 @@ ICON_SIZE = 64
 COLOR_ACTIVE = (40, 167, 69, 255)  # Green
 COLOR_INACTIVE = (220, 53, 69, 255)  # Red
 COLOR_ERROR = (255, 193, 7, 255)  # Orange/Yellow for errors
+AUTO_OFF_TIMEOUT = 60  # Seconds of silence before auto-disabling
 
 
 class TrayClient:
@@ -34,6 +35,7 @@ class TrayClient:
         self.icon = None
         self.kb_controller = keyboard.Controller()
         self.currently_pressed = set()
+        self.last_activity_time = time.time()
 
         # Queue for thread-safe communication
         self.status_queue = queue.Queue()
@@ -52,17 +54,25 @@ class TrayClient:
             pass
 
     def sleep_watchdog(self):
-        """Detect system suspension by monitoring time jumps."""
+        """Detect system suspension by monitoring time jumps + Auto-Stop."""
         last_time = time.time()
         while not self.stop_event.is_set():
             time.sleep(1)
             current_time = time.time()
-            # If more than 10 seconds passed while we only slept 1s, system was likely suspended
+
+            # 1. Detect Sleep (Time jump)
             if current_time - last_time > 10:
                 print("\n[System] Sleep detected. Quitting proactively...")
                 self.on_exit_click()
                 time.sleep(0.5)
                 os._exit(0)
+
+            # 2. Handle Auto-Stop due to inactivity
+            if self.is_typing_enabled:
+                if current_time - self.last_activity_time > AUTO_OFF_TIMEOUT:
+                    print(f"\n[Auto-Stop] Inactivity for {AUTO_OFF_TIMEOUT}s. Disabling.")
+                    self.toggle_typing()
+
             last_time = current_time
 
     def create_image(self, color):
@@ -93,6 +103,8 @@ class TrayClient:
 
     def toggle_typing(self):
         self.is_typing_enabled = not self.is_typing_enabled
+        if self.is_typing_enabled:
+            self.last_activity_time = time.time()  # Reset timer on activation
         new_state = "active" if self.is_typing_enabled else "inactive"
         self.update_icon_state(new_state)
         print(f"State toggled: {new_state}")
@@ -176,6 +188,7 @@ class TrayClient:
                             text = msg.strip()
                             if text and self.is_typing_enabled:
                                 print(f"Server: {text}")
+                                self.last_activity_time = time.time()  # Activity detected!
                                 full_text = text + " "
                                 if self.paste_mode:
                                     pyperclip.copy(full_text)
