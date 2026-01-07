@@ -108,7 +108,8 @@ For detailed instructions on how to create and install plugins, see [doc/plugins
 
 4.  **Install Python Packages:**
     ```bash
-    pip install -r requirements.txt
+    # Install both server and client dependencies for local development
+    pip install -r requirements-server.txt -r requirements-client.txt
     ```
 
 ## Docker
